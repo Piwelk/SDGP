@@ -7,6 +7,6 @@ with open('../../../aclImdb/train/urls_neg.txt') as f1:
     for line in f1:
         url.append(line)
 
-urlFrame = pd.DataFrame({'url' : url }) 
+urlDF = pd.DataFrame({'url' : url }) 
 
-print(urlFrame.head())
+print(urlDF.head())

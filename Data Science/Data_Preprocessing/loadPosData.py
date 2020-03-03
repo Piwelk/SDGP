@@ -28,8 +28,3 @@ print(urlFramePos.head())
 finalDataSetPos = pd.concat([datasetPos, urlFramePos], axis=1)
 finalDataSetPos['movieName'] = finalDataSetPos['url'].str[26:35]
 print(finalDataSetPos)
-
-    #print(str(fileName)[2:-1])
-    #f = open('../../../aclImdb/train/neg/'+str(fileName)[2:-1], 'r')
-    #print(f.read())
-    #f.close
