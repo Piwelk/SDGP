@@ -9,3 +9,5 @@ pip3 install nltk
 pip3 install gensim
 pip3 install sklearn
 pip3 install matplotlib
+pip3 install pickle5
+pip3 install joblib

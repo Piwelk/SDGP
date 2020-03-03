@@ -25,8 +25,6 @@ reviews_df = pd.read_csv("../Data/Training_Data/Train.csv")
 #select a small number of rows to check
 reviews_df = reviews_df.sample(frac = 0.01, replace = False, random_state=42)
 
-reviews = reviews_df[["review", 'movieName']]
-reviews = reviews.reset_index()
 reviews_df["is_bad_review"] = reviews_df["isNeg"]
 reviews_df = reviews_df[["review", "is_bad_review"]]
 #print(reviews_df)
@@ -86,17 +84,32 @@ label = "is_bad_review"
 ignore_cols = [label, "review", "review_clean"]
 features = [c for c in reviews_df.columns if c not in ignore_cols]
 
-X_test = reviews_df[features]
+X_train, X_test, y_train, y_test = train_test_split(reviews_df[features], reviews_df[label], test_size = 0.20, random_state = 42)
 
 print(X_test)
 
-rfModel = joblib.load('sentimentModel.pkl')
-y_pred = [x[1] for x in rfModel.predict_proba(X_test)]
-print(y_pred)
+#Build model
+rf = RandomForestClassifier(n_estimators = 100, random_state = 42)
+rf.fit(X_train, y_train)
 
-results = pd.DataFrame(y_pred)
-print(results)
+#results
+y_pred = [x[1] for x in rf.predict_proba(X_test)]
+fpr, tpr, thresholds = roc_curve(y_test, y_pred, pos_label = 1)
 
-predictions = pd.concat([reviews, results], axis=1)
-predictions = predictions.loc[:,['movieName','0']]
-print(predictions)
+roc_auc = auc(fpr, tpr)
+
+plt.figure(1, figsize = (15, 10))
+lw = 2
+plt.plot(fpr, tpr, color='darkorange',
+         lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], lw=lw, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.0])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic example')
+plt.legend(loc="lower right")
+plt.show()
+
+#save model
+joblib.dump(rf, 'sentimentModel.pkl')
